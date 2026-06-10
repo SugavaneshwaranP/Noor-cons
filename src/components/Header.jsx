@@ -19,7 +19,7 @@ export default function Header({ activeNav, setActiveNav, setAllocationModal }) 
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full px-6 py-5 border-b border-black/5 bg-[#faf9f6]/80 backdrop-blur-md">
+    <header className="sticky top-0 z-50 w-full px-6 py-3.5 md:py-5 border-b border-black/5 bg-[#faf9f6]/80 backdrop-blur-md">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
         
         {/* Logo with HardHat icon */}
@@ -73,7 +73,7 @@ export default function Header({ activeNav, setActiveNav, setAllocationModal }) 
 
       {/* Mobile Navigation Drawer Overlay */}
       <div 
-        className={`fixed inset-0 top-[73px] bg-[#0a1628] blueprint-grid z-45 md:hidden transition-all duration-500 cubic-bezier(0.16, 1, 0.3, 1) flex flex-col justify-between ${
+        className={`fixed inset-0 top-[61px] md:top-[73px] bg-[#0a1628] blueprint-grid z-45 md:hidden transition-all duration-500 cubic-bezier(0.16, 1, 0.3, 1) flex flex-col justify-between ${
           isMenuOpen ? 'opacity-100 pointer-events-auto translate-y-0' : 'opacity-0 pointer-events-none -translate-y-4'
         }`}
       >

@@ -3,7 +3,7 @@ import Lenis from 'lenis';
 
 export const ScrollStackItem = ({ children, itemClassName = '' }) => (
     <div
-        className={`scroll-stack-card relative w-[98vw] mx-auto h-[98vh] my-4 p-0 rounded-[32px] shadow-[0_30px_90px_rgba(0,0,0,0.12)] box-border origin-top will-change-transform overflow-hidden ${itemClassName}`.trim()}
+        className={`scroll-stack-card relative w-full lg:w-[98vw] mx-auto h-auto lg:h-[98vh] lg:my-4 p-0 lg:rounded-[32px] lg:shadow-[0_30px_90px_rgba(0,0,0,0.12)] box-border origin-top will-change-transform lg:overflow-hidden ${itemClassName}`.trim()}
         style={{
             backfaceVisibility: 'hidden',
             transformStyle: 'preserve-3d'
@@ -40,6 +40,10 @@ const ScrollStack = ({
     const cardOffsetsRef = useRef([]);
     const endElementOffsetRef = useRef(0);
 
+    const isMobile = useCallback(() => {
+        return typeof window !== 'undefined' && window.innerWidth < 1024;
+    }, []);
+
     const calculateProgress = useCallback((scrollTop, start, end) => {
         if (scrollTop < start) return 0;
         if (scrollTop > end) return 1;
@@ -72,7 +76,7 @@ const ScrollStack = ({
 
     // Measure layout static positions once (called on mount and resize)
     const measureLayout = useCallback(() => {
-        if (!cardsRef.current.length) return;
+        if (!cardsRef.current.length || isMobile()) return;
 
         // Temporarily reset transforms so we get the accurate layout offsets
         const savedTransforms = [];
@@ -113,10 +117,21 @@ const ScrollStack = ({
             card.style.transform = savedTransforms[i];
             card.style.filter = savedFilters[i];
         });
-    }, [useWindowScroll]);
+    }, [useWindowScroll, isMobile]);
 
     const updateCardTransforms = useCallback(() => {
         if (!cardsRef.current.length || isUpdatingRef.current) return;
+
+        // Bypassed on mobile to allow natural DOM scrolling with zero lag
+        if (isMobile()) {
+            cardsRef.current.forEach(card => {
+                if (card) {
+                    card.style.transform = 'none';
+                    card.style.filter = 'none';
+                }
+            });
+            return;
+        }
 
         isUpdatingRef.current = true;
 
@@ -213,7 +228,8 @@ const ScrollStack = ({
         onStackComplete,
         calculateProgress,
         parsePercentage,
-        getScrollData
+        getScrollData,
+        isMobile
     ]);
 
     const handleScroll = useCallback(() => {
@@ -221,6 +237,8 @@ const ScrollStack = ({
     }, [updateCardTransforms]);
 
     const setupLenis = useCallback(() => {
+        if (isMobile()) return null;
+
         if (useWindowScroll) {
             const lenis = new Lenis({
                 duration: 1.5,
@@ -273,7 +291,7 @@ const ScrollStack = ({
             lenisRef.current = lenis;
             return lenis;
         }
-    }, [handleScroll, useWindowScroll]);
+    }, [handleScroll, useWindowScroll, isMobile]);
 
     // Recalculate layout values on window resizing
     useEffect(() => {
@@ -299,16 +317,23 @@ const ScrollStack = ({
         const transformsCache = lastTransformsRef.current;
 
         cards.forEach((card, i) => {
-            if (i < cards.length - 1) {
-                card.style.marginBottom = `${itemDistance}px`;
+            if (isMobile()) {
+                card.style.marginBottom = '0px';
+                card.style.transform = 'none';
+                card.style.filter = 'none';
+                card.style.willChange = 'auto';
+            } else {
+                if (i < cards.length - 1) {
+                    card.style.marginBottom = `${itemDistance}px`;
+                }
+                card.style.willChange = 'transform, filter';
+                card.style.transformOrigin = 'top center';
+                card.style.backfaceVisibility = 'hidden';
+                card.style.transform = 'translateZ(0)';
+                card.style.webkitTransform = 'translateZ(0)';
+                card.style.perspective = '1000px';
+                card.style.webkitPerspective = '1000px';
             }
-            card.style.willChange = 'transform, filter';
-            card.style.transformOrigin = 'top center';
-            card.style.backfaceVisibility = 'hidden';
-            card.style.transform = 'translateZ(0)';
-            card.style.webkitTransform = 'translateZ(0)';
-            card.style.perspective = '1000px';
-            card.style.webkitPerspective = '1000px';
         });
 
         // Perform initial measurements
@@ -350,7 +375,8 @@ const ScrollStack = ({
         onStackComplete,
         setupLenis,
         updateCardTransforms,
-        measureLayout
+        measureLayout,
+        isMobile
     ]);
 
     // Container styles based on scroll mode
@@ -376,7 +402,7 @@ const ScrollStack = ({
 
     return (
         <div className={containerClassName} ref={scrollerRef} style={containerStyles}>
-            <div className="scroll-stack-inner pt-[1vh] px-[1vw] pb-[2vh] min-h-screen">
+            <div className="scroll-stack-inner pt-0 lg:pt-[1vh] px-0 lg:px-[1vw] pb-0 lg:pb-[2vh] min-h-screen">
                 {children}
                 {/* Spacer so the last pin can release cleanly */}
                 <div className="scroll-stack-end w-full h-px" />
