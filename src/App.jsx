@@ -18,10 +18,22 @@ function App() {
   const [activeTab, setActiveTab] = useState('residential');
 
   // Interactive Estimator Variables
-  const [buildType, setBuildType] = useState('residential');
-  const [sqFt, setSqFt] = useState(2400);
-  const [smartLevel, setSmartLevel] = useState(75);
-  const [greenGrade, setGreenGrade] = useState('platinum');
+  const [calculator, setCalculator] = useState({
+    package: 'luminosity',
+    groundFloor: 1200,
+    firstFloor: 1200,
+    secondFloor: 0,
+    thirdFloor: 0,
+    fourthFloor: 0,
+    waterSump: 5000,
+    septicTank: 3000,
+    compoundLength: 120,
+    compoundHeight: 6
+  });
+
+  const updateCalculator = (key, value) => {
+    setCalculator(prev => ({ ...prev, [key]: value }));
+  };
 
 
 
@@ -187,33 +199,49 @@ function App() {
 
   // Estimator live calculations
   const calculateEstimates = () => {
-    let multiplier = 5200; // Base cost per sq ft in INR
-    if (buildType === 'commercial') multiplier = 6800;
-    if (buildType === 'coastal') multiplier = 7500;
+    const PACKAGES = {
+      luminosity: { rate: 4500, label: 'Noor Luminosity Villa Package' },
+      nova: { rate: 3800, label: 'Nova Apex Smart Home Package' },
+      helix: { rate: 5800, label: 'Tech-Helix Corporate Package' },
+      oceanic: { rate: 6500, label: 'Oceanic Horizon Net-Zero Package' }
+    };
+    const rate = PACKAGES[calculator.package]?.rate || 4500;
+    const packageName = PACKAGES[calculator.package]?.label || 'Noor Luminosity Villa Package';
 
-    const smartMultiplier = 1 + (smartLevel / 200);
+    const floorArea = 
+      Number(calculator.groundFloor || 0) +
+      Number(calculator.firstFloor || 0) +
+      Number(calculator.secondFloor || 0) +
+      Number(calculator.thirdFloor || 0) +
+      Number(calculator.fourthFloor || 0);
 
-    let greenMultiplier = 1;
-    if (greenGrade === 'platinum') greenMultiplier = 1.15;
-    if (greenGrade === 'netzero') greenMultiplier = 1.30;
+    const floorCost = floorArea * rate;
+    const sumpCost = Number(calculator.waterSump || 0) * 24;
+    const septicCost = Number(calculator.septicTank || 0) * 24;
+    const compoundArea = Number(calculator.compoundLength || 0) * Number(calculator.compoundHeight || 0);
+    const compoundCost = compoundArea * 400;
 
-    const totalCost = sqFt * multiplier * smartMultiplier * greenMultiplier;
-    
-    const baseOffset = sqFt * 0.0015;
-    const offsetFactor = greenGrade === 'netzero' ? 2.5 : greenGrade === 'platinum' ? 1.8 : 1.1;
+    const totalCost = floorCost + sumpCost + septicCost + compoundCost;
+
+    // Estimates summary
+    const baseOffset = floorArea * 0.0015;
+    const offsetFactor = calculator.package === 'oceanic' ? 2.5 : calculator.package === 'luminosity' ? 1.8 : 1.1;
     const carbonOffset = baseOffset * offsetFactor;
 
-    const solarGen = (sqFt * 0.005) * (greenGrade === 'netzero' ? 1.5 : 1);
+    const solarGen = (floorArea * 0.005) * (calculator.package === 'oceanic' ? 1.5 : calculator.package === 'luminosity' ? 1.2 : 0.8);
 
-    const baseMonths = buildType === 'commercial' ? 18 : 10;
-    const sizeFactor = sqFt / 2000;
-    const timeline = Math.round(baseMonths * (0.7 + sizeFactor * 0.3));
+    const baseMonths = calculator.package === 'helix' ? 18 : 10;
+    const sizeFactor = floorArea / 2000;
+    const timeline = Math.max(6, Math.min(36, Math.round(baseMonths * (0.7 + sizeFactor * 0.3))));
 
     return {
-      cost: Math.round(totalCost / 100000), // In Lakhs
+      cost: (totalCost / 100000).toFixed(2), // in Lakhs
+      totalCostInRs: totalCost,
+      floorArea,
       carbon: carbonOffset.toFixed(1),
       energy: solarGen.toFixed(1),
-      timeline: timeline
+      timeline: timeline,
+      packageName
     };
   };
 
@@ -253,16 +281,10 @@ function App() {
         <ScrollStackItem data-margin-bottom="85vh">
           <WhyUs />
         </ScrollStackItem>
-        <ScrollStackItem>
+        <ScrollStackItem itemClassName="overflow-y-auto">
           <SmartHUD 
-            buildType={buildType}
-            setBuildType={setBuildType}
-            sqFt={sqFt}
-            setSqFt={setSqFt}
-            smartLevel={smartLevel}
-            setSmartLevel={setSmartLevel}
-            greenGrade={greenGrade}
-            setGreenGrade={setGreenGrade}
+            calculator={calculator}
+            updateCalculator={updateCalculator}
             estimates={estimates}
             setAllocationModal={setAllocationModal}
           />
@@ -281,9 +303,8 @@ function App() {
           selectedProject={selectedProject}
           setAllocationModal={setAllocationModal}
           setSelectedProject={setSelectedProject}
-          sqFt={sqFt}
-          greenGrade={greenGrade}
           estimates={estimates}
+          calculator={calculator}
         />
       )}
     </div>

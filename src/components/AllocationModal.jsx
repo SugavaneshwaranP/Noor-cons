@@ -5,9 +5,8 @@ export default function AllocationModal({
   selectedProject, 
   setAllocationModal, 
   setSelectedProject, 
-  sqFt, 
-  greenGrade, 
-  estimates 
+  estimates,
+  calculator
 }) {
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 backdrop-blur-md">
@@ -81,7 +80,7 @@ export default function AllocationModal({
               rows="3"
               placeholder={selectedProject 
                 ? `Requesting allocation details for: ${selectedProject.title}` 
-                : "Describe your custom build requirement (e.g. 2,400 Sq Ft Net-Zero Villa at ECR)"
+                : `Describe your custom build requirement (e.g. details on ${estimates.packageName} with ${estimates.floorArea} sqft)`
               }
               className="w-full px-4 py-2.5 rounded bg-neutral-50 border border-black/10 focus:border-black focus:outline-none font-mono text-xs text-black resize-none"
             ></textarea>
@@ -90,8 +89,14 @@ export default function AllocationModal({
           {/* Dynamic cost alert if estimate is active */}
           {!selectedProject && (
             <div className="bg-neutral-50 rounded p-3.5 border border-black/5 font-mono text-[10px] text-neutral-600 leading-relaxed">
-              <div className="font-bold text-black mb-0.5">// CURRENT SELECTION ESTIMATE:</div>
-              FOOTPRINT: {sqFt} SQ FT | GRADE: {greenGrade.toUpperCase()} | VALUATION: ₹{estimates.cost} LAKHS
+              <div className="font-bold text-black mb-1">// CURRENT SELECTION ESTIMATE:</div>
+              <div className="uppercase space-y-0.5">
+                <div>PACKAGE: <span className="font-bold text-black">{estimates.packageName}</span></div>
+                <div>TOTAL AREA: <span className="font-bold text-black">{estimates.floorArea} SQ FT</span></div>
+                <div>WATER SUMP: <span className="font-bold text-black">{calculator.waterSump} Ltr</span> | SEPTIC TANK: <span className="font-bold text-black">{calculator.septicTank} Ltr</span></div>
+                <div>COMPOUND WALL: <span className="font-bold text-black">{calculator.compoundLength}L × {calculator.compoundHeight}H ft</span></div>
+                <div className="pt-1 text-[11px] border-t border-black/5 mt-1">ESTIMATED VALUATION: <span className="text-black font-bold text-xs">₹{estimates.cost} LAKHS</span></div>
+              </div>
             </div>
           )}
 
