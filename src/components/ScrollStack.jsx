@@ -1,13 +1,14 @@
 import { useLayoutEffect, useEffect, useRef, useCallback } from 'react';
 import Lenis from 'lenis';
 
-export const ScrollStackItem = ({ children, itemClassName = '' }) => (
+export const ScrollStackItem = ({ children, itemClassName = '', ...props }) => (
     <div
         className={`scroll-stack-card relative w-full lg:w-[98vw] mx-auto h-auto lg:h-[98vh] my-0 lg:my-4 p-0 rounded-none lg:rounded-[32px] shadow-none lg:shadow-[0_30px_90px_rgba(0,0,0,0.12)] box-border origin-top will-change-transform overflow-hidden ${itemClassName}`.trim()}
         style={{
             backfaceVisibility: 'hidden',
             transformStyle: 'preserve-3d'
         }}
+        {...props}
     >
         {children}
     </div>
@@ -340,7 +341,8 @@ const ScrollStack = ({
 
         cards.forEach((card, i) => {
             if (i < cards.length - 1) {
-                card.style.marginBottom = `${itemDistance}px`;
+                const customMargin = card.getAttribute('data-margin-bottom');
+                card.style.marginBottom = customMargin ? customMargin : `${itemDistance}px`;
             }
             card.style.willChange = 'transform, filter';
             card.style.transformOrigin = 'top center';

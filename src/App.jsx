@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import Header from './components/Header';
 import Hero from './components/Hero';
-import ProjectsVault from './components/ProjectsVault';
-import Ecosystem from './components/Ecosystem';
+import AboutUs from './components/AboutUs';
+import WhyUs from './components/WhyUs';
 import SmartHUD from './components/SmartHUD';
 import Reviews from './components/Reviews';
 import Footer from './components/Footer';
@@ -78,7 +78,7 @@ function App() {
           carbonReduction: '4.8 Tons/Yr',
           smartIndex: '95/100'
         },
-        image: '/rough_coastal_villa.png',
+        image: '/coastal_villa.png',
         features: ['BIM Blueprint Twin', 'Greywater Grid', 'Holographic Controls', 'Off-Grid Backup']
       },
       {
@@ -93,7 +93,7 @@ function App() {
           carbonReduction: '2.9 Tons/Yr',
           smartIndex: '90/100'
         },
-        image: '/rough_smart_home.png',
+        image: '/smart_home.png',
         features: ['Smart Glass Facade', 'Micro-Ventilation', 'On-Chain Deed Registry', 'App Mesh Network']
       }
     ],
@@ -110,7 +110,7 @@ function App() {
           carbonReduction: '180 Tons/Yr',
           smartIndex: '98/100'
         },
-        image: '/rough_tech_park.png',
+        image: '/tech_park.png',
         features: ['Parametric White Concrete', 'Pneumatic Waste Grid', 'Dynamic Sun Shading', 'Tokenized Lease Registry']
       }
     ],
@@ -127,7 +127,7 @@ function App() {
           carbonReduction: '9.2 Tons/Yr',
           smartIndex: '97/100'
         },
-        image: '/rough_coastal_villa.png',
+        image: '/coastal_villa.png',
         features: ['Sea-Breeze Geo Cooling', 'Tidal Energy Micro-Hook', 'Structural Health Sensors', 'Self-Healing Bio Concrete']
       }
     ]
@@ -144,8 +144,8 @@ function App() {
       authTag: "DEED#0924-ECR",
       title: "Noor Luminosity Villas",
       year: "2026",
-      image: "/rough_coastal_villa.png",
-      details: ["/rough_smart_home.png", "/rough_tech_park.png", "/rough_skyscraper.png", "/rough_coastal_villa.png"]
+      image: "/coastal_villa.png",
+      details: ["/smart_home.png", "/tech_park.png", "/hero_skyscraper.png", "/coastal_villa.png"]
     },
     {
       name: "Dr. Ananya Ramakrishnan",
@@ -156,8 +156,8 @@ function App() {
       authTag: "DEED#0714-KAL",
       title: "Nova Apex Smart Homes",
       year: "2026",
-      image: "/rough_smart_home.png",
-      details: ["/rough_coastal_villa.png", "/rough_skyscraper.png", "/rough_smart_home.png", "/rough_tech_park.png"]
+      image: "/smart_home.png",
+      details: ["/coastal_villa.png", "/hero_skyscraper.png", "/smart_home.png", "/tech_park.png"]
     },
     {
       name: "Farhan Dhawood",
@@ -168,8 +168,8 @@ function App() {
       authTag: "DEED#1102-DHW",
       title: "Tech-Helix Corporate Park",
       year: "2025",
-      image: "/rough_tech_park.png",
-      details: ["/rough_skyscraper.png", "/rough_coastal_villa.png", "/rough_tech_park.png", "/rough_smart_home.png"]
+      image: "/tech_park.png",
+      details: ["/hero_skyscraper.png", "/coastal_villa.png", "/tech_park.png", "/smart_home.png"]
     },
     {
       name: "Sarah Joshua",
@@ -180,8 +180,8 @@ function App() {
       authTag: "DEED#0442-ECR",
       title: "Oceanic Horizon Villa",
       year: "2026",
-      image: "/rough_coastal_villa.png",
-      details: ["/rough_smart_home.png", "/rough_tech_park.png", "/rough_coastal_villa.png", "/rough_skyscraper.png"]
+      image: "/coastal_villa.png",
+      details: ["/smart_home.png", "/tech_park.png", "/coastal_villa.png", "/hero_skyscraper.png"]
     }
   ];
 
@@ -224,17 +224,7 @@ function App() {
   return (
     <div className="tech-grid-container min-h-screen text-[#111115] font-sans selection:bg-black selection:text-white">
       
-      {/* Floating Telemetry Coordinates */}
-      <div className="hidden lg:block absolute left-6 top-24 font-mono text-[9px] text-neutral-600 tracking-wider z-20">
-        LAT: 12.5186° N <br />
-        LON: 80.1601° E <br />
-        ALT: 4.2M MSL
-      </div>
-      <div className="hidden lg:block absolute right-6 top-24 font-mono text-[9px] text-right text-neutral-600 tracking-wider z-20">
-        SYS_STATUS: ACTIVE <br />
-        GRID: SECURE_100% <br />
-        IST: {timeText}
-      </div>
+
 
       {/* Grid Border Ticks */}
       <div className="grid-ticks">
@@ -258,16 +248,10 @@ function App() {
           />
         </ScrollStackItem>
         <ScrollStackItem>
-          <ProjectsVault 
-            projects={projects}
-            activeTab={activeTab}
-            setActiveTab={setActiveTab}
-            setSelectedProject={setSelectedProject}
-            setAllocationModal={setAllocationModal}
-          />
+          <AboutUs />
         </ScrollStackItem>
-        <ScrollStackItem>
-          <Ecosystem />
+        <ScrollStackItem data-margin-bottom="85vh">
+          <WhyUs />
         </ScrollStackItem>
         <ScrollStackItem>
           <SmartHUD 
